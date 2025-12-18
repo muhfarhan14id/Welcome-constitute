@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Transition & QR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        #video-container {
+            position: relative;
+            width: 0%;
+            height: 0%;
+            opacity: 0;
+            transition: all 3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: black;
+        }
+
+        #video-container.active {
+            width: 100vw;
+            height: 100vh;
+            opacity: 1;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #qr-code {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1s ease-out;
+            border: 4px solid white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        #qr-code.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            cursor: pointer;
+            transition: opacity 0.5s;
+        }
+
+        .btn-start {
+            padding: 1rem 2rem;
+            background: #000;
+            color: #fff;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay untuk memulai (karena browser melarang autoplay bersuara tanpa interaksi) -->
+    <div id="start-overlay" onclick="startExperience()">
+        <div class="btn-start">Klik untuk Memulai</div>
+    </div>
+
+    <!-- Wadah Video -->
+    <div id="video-container">
+        <video id="myVideo" playsinline>
+            <source src="https://files.catbox.moe/bg3u2r.mp4" type="video/mp4">
+            Browser Anda tidak mendukung video HTML5.
+        </video>
+        
+        <!-- Wadah QR Code -->
+        <img id="qr-code" src="https://files.catbox.moe/ly8xv4.jpg" alt="QR Code">
+    </div>
+
+    <script>
+        function startExperience() {
+            const overlay = document.getElementById('start-overlay');
+            const container = document.getElementById('video-container');
+            const video = document.getElementById('myVideo');
+            const qr = document.getElementById('qr-code');
+
+            // Sembunyikan tombol mulai
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+
+            // Aktifkan animasi pembesaran video
+            container.classList.add('active');
+
+            // Putar video
+            video.play();
+
+            // Munculkan QR Code setelah 5 detik video berjalan
+            // Anda bisa mengubah angkanya (5000ms = 5 detik)
+            setTimeout(() => {
+                qr.classList.add('visible');
+            }, 5000);
+        }
+
+        // Pastikan video memenuhi layar saat resize
+        window.addEventListener('resize', () => {
+            const container = document.getElementById('video-container');
+            if (container.classList.contains('active')) {
+                container.style.width = window.innerWidth + 'px';
+                container.style.height = window.innerHeight + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
