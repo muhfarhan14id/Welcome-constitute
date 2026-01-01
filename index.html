@@ -3,163 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hitung Mundur 2027</title>
+    <title>Timekeeper Premium 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
-        
+        :root {
+            /* Default Accents (Cyber Blue) */
+            --glow-primary: #4f46e5;
+            --glow-secondary: #06b6d4;
+            --text-gradient-start: #ffffff;
+            --text-gradient-end: #94a3b8;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a; /* Slate 900 */
+            background-color: #000000;
             color: white;
-            overflow-x: hidden;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            transition: all 1s ease;
         }
 
-        /* Animasi background halus */
-        .bg-gradient-animate {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+        /* --- NYEPI MODE (Void) --- */
+        body.mode-nyepi {
+            background: #000000 !important;
+            cursor: none;
+        }
+        body.mode-nyepi * {
+            display: none !important;
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* --- BACKGROUND AURORA (Dynamic Glow) --- */
+        .aurora-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .aurora-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            transition: background 2s ease;
+            animation: float 20s infinite ease-in-out;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        .blob-1 { top: -10%; left: 20%; width: 40vw; height: 40vw; background: var(--glow-primary); }
+        .blob-2 { bottom: -10%; right: 20%; width: 35vw; height: 35vw; background: var(--glow-secondary); animation-delay: -5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        /* --- GLASS CARDS --- */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        /* --- TEXT GRADIENTS --- */
+        .text-gradient {
+            background: linear-gradient(to bottom right, var(--text-gradient-start), var(--text-gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .font-mono-display { font-family: 'Space Grotesk', monospace; }
+
+        /* --- THEME CLASSES (Mengubah Variabel CSS) --- */
+        
+        /* 1. Theme: Party/New Year (Gold & Purple) */
+        body.theme-party {
+            --glow-primary: #7c3aed; /* Violet */
+            --glow-secondary: #f59e0b; /* Gold */
+            --text-gradient-start: #fbbf24;
+            --text-gradient-end: #d8b4fe;
+        }
+
+        /* 2. Theme: National (Red & White) */
+        body.theme-national {
+            --glow-primary: #dc2626; /* Red */
+            --glow-secondary: #991b1b; /* Dark Red */
+            --text-gradient-start: #ffffff;
+            --text-gradient-end: #fca5a5;
+        }
+
+        /* 3. Theme: Nature/Religious (Emerald & Teal) */
+        body.theme-nature {
+            --glow-primary: #059669;
+            --glow-secondary: #0d9488;
+            --text-gradient-start: #a7f3d0;
+            --text-gradient-end: #34d399;
         }
     </style>
 </head>
-<body class="bg-gradient-animate min-h-screen flex flex-col items-center justify-center p-4">
+<body class="h-screen w-full flex flex-col items-center justify-center relative selection:bg-white/20">
 
-    <!-- Container Utama -->
-    <div class="glass-panel rounded-3xl p-8 max-w-4xl w-full text-center relative overflow-hidden">
-        
-        <!-- Header -->
-        <h1 class="text-3xl md:text-5xl font-black mb-2 tracking-tight">
-            PERJALANAN 2026
-        </h1>
-        <p class="text-lg md:text-xl font-light opacity-90 mb-8">
-            Menuju Tahun 2027
-        </p>
-
-        <!-- Kotak Waktu (Countdown) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            <!-- Hari -->
-            <div class="bg-black/20 rounded-xl p-4 flex flex-col items-center justify-center transform hover:scale-105 transition duration-300">
-                <span id="days" class="text-4xl md:text-6xl font-bold text-yellow-300">000</span>
-                <span class="text-sm uppercase tracking-widest mt-2">Hari</span>
-            </div>
-            <!-- Jam -->
-            <div class="bg-black/20 rounded-xl p-4 flex flex-col items-center justify-center transform hover:scale-105 transition duration-300">
-                <span id="hours" class="text-4xl md:text-6xl font-bold text-blue-300">00</span>
-                <span class="text-sm uppercase tracking-widest mt-2">Jam</span>
-            </div>
-            <!-- Menit -->
-            <div class="bg-black/20 rounded-xl p-4 flex flex-col items-center justify-center transform hover:scale-105 transition duration-300">
-                <span id="minutes" class="text-4xl md:text-6xl font-bold text-pink-300">00</span>
-                <span class="text-sm uppercase tracking-widest mt-2">Menit</span>
-            </div>
-            <!-- Detik -->
-            <div class="bg-black/20 rounded-xl p-4 flex flex-col items-center justify-center transform hover:scale-105 transition duration-300">
-                <span id="seconds" class="text-4xl md:text-6xl font-bold text-green-300">00</span>
-                <span class="text-sm uppercase tracking-widest mt-2">Detik</span>
-            </div>
-        </div>
-
-        <!-- Progress Bar Tahun -->
-        <div class="w-full bg-gray-700/50 rounded-full h-6 mb-2 relative">
-            <div id="year-progress" class="bg-white h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-2" style="width: 0%">
-                <div class="w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
-            </div>
-        </div>
-        <div class="flex justify-between text-xs md:text-sm opacity-80 mb-6">
-            <span>1 Jan 2026</span>
-            <span id="progress-text">0% Selesai</span>
-            <span>1 Jan 2027</span>
-        </div>
-
-        <!-- Detail Waktu Sekarang -->
-        <div class="text-sm bg-black/30 inline-block px-4 py-2 rounded-full">
-            Waktu Sekarang: <span id="current-time" class="font-mono font-bold">--:--:--</span>
-        </div>
-
-        <!-- Pesan Selesai (Disembunyikan secara default) -->
-        <div id="complete-message" class="hidden absolute inset-0 bg-black/90 flex-col items-center justify-center z-50">
-            <h2 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-600 mb-4">
-                SELAMAT TAHUN BARU 2027!
-            </h2>
-            <p class="text-xl text-white">Perjalanan baru dimulai.</p>
-        </div>
+    <!-- Ambient Background -->
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
     </div>
 
-    <script>
-        // Konfigurasi Tanggal
-        const startDate = new Date("January 1, 2026 00:00:00").getTime();
-        const targetDate = new Date("January 1, 2027 00:00:00").getTime();
+    <!-- Main Interface -->
+    <main class="w-full max-w-7xl px-6 md:px-12 text-center z-10">
         
-        // Elemen DOM
-        const elDays = document.getElementById('days');
-        const elHours = document.getElementById('hours');
-        const elMinutes = document.getElementById('minutes');
-        const elSeconds = document.getElementById('seconds');
-        const elProgress = document.getElementById('year-progress');
-        const elProgressText = document.getElementById('progress-text');
-        const elCurrentTime = document.getElementById('current-time');
-        const elMessage = document.getElementById('complete-message');
-
-        function updateTimer() {
-            const now = new Date().getTime();
+        <!-- HEADER SECTION (Berubah sesuai event) -->
+        <header class="mb-16 relative">
+            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full glass mb-6">
+                <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                <span id="event-badge" class="text-xs uppercase tracking-[0.3em] text-gray-400 font-bold">Timeline System</span>
+            </div>
             
-            // 1. Update Waktu Sekarang (Jam Digital Kecil)
-            const dateNow = new Date();
-            elCurrentTime.textContent = dateNow.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            <h1 id="main-title" class="text-5xl md:text-8xl font-black tracking-tight leading-none text-gradient mb-4 drop-shadow-2xl">
+                2026 &rarr; 2027
+            </h1>
+            
+            <p id="sub-title" class="text-lg md:text-xl text-gray-500 font-light tracking-wide max-w-2xl mx-auto">
+                Monitoring waktu real-time menuju tahun depan.
+            </p>
+        </header>
 
-            // 2. Hitung Sisa Waktu (Countdown)
-            const distance = targetDate - now;
+        <!-- COUNTDOWN GRID -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-20">
+            <!-- Days -->
+            <div class="glass p-8 rounded-3xl group hover:bg-white/5 transition duration-500">
+                <div id="t-days" class="font-mono-display text-6xl md:text-8xl font-bold text-white group-hover:scale-110 transition duration-500">000</div>
+                <div class="text-xs text-gray-500 uppercase tracking-[0.4em] mt-2">Hari</div>
+            </div>
+            <!-- Hours -->
+            <div class="glass p-8 rounded-3xl group hover:bg-white/5 transition duration-500">
+                <div id="t-hours" class="font-mono-display text-6xl md:text-8xl font-bold text-white group-hover:scale-110 transition duration-500">00</div>
+                <div class="text-xs text-gray-500 uppercase tracking-[0.4em] mt-2">Jam</div>
+            </div>
+            <!-- Minutes -->
+            <div class="glass p-8 rounded-3xl group hover:bg-white/5 transition duration-500">
+                <div id="t-minutes" class="font-mono-display text-6xl md:text-8xl font-bold text-white group-hover:scale-110 transition duration-500">00</div>
+                <div class="text-xs text-gray-500 uppercase tracking-[0.4em] mt-2">Menit</div>
+            </div>
+            <!-- Seconds -->
+            <div class="glass p-8 rounded-3xl group hover:bg-white/5 transition duration-500 border-b-2 border-white/20">
+                <div id="t-seconds" class="font-mono-display text-6xl md:text-8xl font-bold text-gradient group-hover:scale-110 transition duration-500">00</div>
+                <div class="text-xs text-gray-500 uppercase tracking-[0.4em] mt-2">Detik</div>
+            </div>
+        </div>
 
-            // Kalkulasi waktu
+        <!-- FOOTER INFO -->
+        <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 uppercase tracking-widest border-t border-white/5 pt-8 font-mono">
+            <span id="current-full-date">Loading...</span>
+            <div class="flex items-center gap-4 mt-4 md:mt-0">
+                <span>Progress: <span id="progress-text" class="text-white">0%</span></span>
+                <div class="w-24 h-1 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-white w-0 transition-all duration-1000"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- DATABASE EVENTS 2026 ---
+        const events = {
+            // JANUARI
+            "01-01": { title: "TAHUN BARU 2026", sub: "Selamat memulai perjalanan baru.", theme: "party", badge: "SPECIAL EVENT" },
+            "01-25": { title: "HARI GIZI", sub: "Peringatan Hari Gizi Nasional.", theme: "nature", badge: "PERINGATAN" },
+            
+            // FEBRUARI
+            "02-14": { title: "VALENTINE'S DAY", sub: "Hari kasih sayang sedunia.", theme: "party", badge: "GLOBAL EVENT" },
+            "02-17": { title: "IMLEK 2577", sub: "Tahun Baru Cina.", theme: "party", badge: "LIBUR NASIONAL" },
+
+            // MARET
+            "03-19": { title: "NYEPI", sub: "", theme: "nyepi", badge: "SILENT DAY" }, 
+            "03-20": { title: "IDUL FITRI", sub: "Mohon Maaf Lahir Batin.", theme: "nature", badge: "HARI RAYA" },
+
+            // APRIL
+            "04-21": { title: "HARI KARTINI", sub: "Habis Gelap Terbitlah Terang.", theme: "national", badge: "NASIONAL" },
+
+            // MEI
+            "05-01": { title: "MAY DAY", sub: "Hari Buruh Internasional.", theme: "national", badge: "GLOBAL EVENT" },
+            "05-02": { title: "HARDIKNAS", sub: "Hari Pendidikan Nasional.", theme: "national", badge: "NASIONAL" },
+            "05-20": { title: "KEBANGKITAN NASIONAL", sub: "Bangkit untuk Indonesia Maju.", theme: "national", badge: "NASIONAL" },
+
+            // JUNI
+            "06-01": { title: "LAHIR PANCASILA", sub: "Dasar Negara Indonesia.", theme: "national", badge: "NASIONAL" },
+
+            // AGUSTUS
+            "08-17": { title: "HUT RI KE-81", sub: "Dirgahayu Republik Indonesia.", theme: "national", badge: "KEMERDEKAAN" },
+
+            // OKTOBER
+            "10-02": { title: "HARI BATIK", sub: "Warisan Budaya Indonesia.", theme: "party", badge: "BUDAYA" },
+            "10-28": { title: "SUMPAH PEMUDA", sub: "Satu Nusa, Satu Bangsa.", theme: "national", badge: "NASIONAL" },
+
+            // NOVEMBER
+            "11-10": { title: "HARI PAHLAWAN", sub: "Perkokoh Persatuan Membangun Negeri.", theme: "national", badge: "NASIONAL" },
+            "11-25": { title: "HARI GURU", sub: "Terima Kasih Guruku.", theme: "nature", badge: "NASIONAL" },
+
+            // DESEMBER
+            "12-25": { title: "HARI NATAL", sub: "Damai Kasih Natal.", theme: "nature", badge: "HARI RAYA" }
+        };
+
+        const START = new Date("2026-01-01T00:00:00").getTime();
+        const TARGET = new Date("2027-01-01T00:00:00").getTime();
+
+        // DOM Cache
+        const dom = {
+            body: document.body,
+            title: document.getElementById('main-title'),
+            sub: document.getElementById('sub-title'),
+            badge: document.getElementById('event-badge'),
+            date: document.getElementById('current-full-date'),
+            d: document.getElementById('t-days'),
+            h: document.getElementById('t-hours'),
+            m: document.getElementById('t-minutes'),
+            s: document.getElementById('t-seconds'),
+            pText: document.getElementById('progress-text'),
+            pBar: document.getElementById('progress-bar')
+        };
+
+        function updateSystem() {
+            const now = new Date();
+            const nowTs = now.getTime();
+
+            // 1. EVENT CHECK (Logic Ganti Tema)
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const key = `${m}-${d}`;
+            const event = events[key];
+
+            // Reset Default
+            dom.body.className = "h-screen w-full flex flex-col items-center justify-center relative selection:bg-white/20"; 
+            
+            if (event) {
+                // Handle Nyepi
+                if (event.theme === 'nyepi') {
+                    dom.body.classList.add('mode-nyepi');
+                    return;
+                }
+
+                // Handle Theme
+                dom.body.classList.add(`theme-${event.theme}`);
+                
+                // Update UI Text
+                dom.title.innerHTML = event.title;
+                dom.sub.innerHTML = event.sub;
+                dom.badge.innerHTML = event.badge;
+                dom.badge.parentElement.classList.replace('text-gray-400', 'text-white'); // Highlight badge
+            } else {
+                // Normal Day
+                dom.title.innerHTML = "2026 &rarr; 2027";
+                dom.sub.innerHTML = "Monitoring waktu real-time menuju tahun depan.";
+                dom.badge.innerHTML = "TIMELINE SYSTEM";
+            }
+
+            // 2. COUNTDOWN LOGIC
+            const distance = TARGET - nowTs;
+            
+            if (distance < 0) {
+                dom.d.innerText = "00";
+                return;
+            }
+
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Tampilkan hasil dengan format 2 digit (01, 02, dst)
-            if (distance > 0) {
-                elDays.innerText = days; // Hari bisa lebih dari 2 digit
-                elHours.innerText = hours < 10 ? '0' + hours : hours;
-                elMinutes.innerText = minutes < 10 ? '0' + minutes : minutes;
-                elSeconds.innerText = seconds < 10 ? '0' + seconds : seconds;
-            } else {
-                // Jika waktu habis
-                clearInterval(interval);
-                elMessage.classList.remove('hidden');
-                elMessage.classList.add('flex');
-            }
+            dom.d.innerText = String(days).padStart(3, '0');
+            dom.h.innerText = String(hours).padStart(2, '0');
+            dom.m.innerText = String(minutes).padStart(2, '0');
+            dom.s.innerText = String(seconds).padStart(2, '0');
 
-            // 3. Hitung Progress Bar Tahunan
-            const totalDuration = targetDate - startDate;
-            const timePassed = now - startDate;
-            let percentage = (timePassed / totalDuration) * 100;
+            // 3. PROGRESS & DATE
+            const total = TARGET - START;
+            const passed = nowTs - START;
+            let percent = (passed / total) * 100;
+            percent = Math.max(0, Math.min(100, percent));
+
+            dom.pText.innerText = percent.toFixed(4) + "%";
+            dom.pBar.style.width = percent + "%";
             
-            // Batasi persentase antara 0 dan 100
-            percentage = Math.max(0, Math.min(100, percentage));
-            
-            elProgress.style.width = percentage + "%";
-            elProgressText.innerText = percentage.toFixed(4) + "% Tahun 2026 Berlalu";
+            dom.date.innerText = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' 
+            });
         }
 
-        // Jalankan fungsi update setiap 1 detik
-        const interval = setInterval(updateTimer, 1000);
-        
-        // Panggil sekali di awal agar tidak ada delay 1 detik saat load
-        updateTimer();
+        // Jalankan
+        setInterval(updateSystem, 1000);
+        updateSystem(); // Instant Run
+
     </script>
 </body>
 </html>
